@@ -1,0 +1,72 @@
+---
+interface Props {
+  type?: 'note' | 'tip' | 'warning' | 'danger';
+}
+
+const { type = 'note' } = Astro.props;
+
+const icons = {
+  note: 'INFO',
+  tip: 'TIP',
+  warning: 'WARNING',
+  danger: 'DANGER'
+};
+
+const titles = {
+  note: 'Note',
+  tip: 'Tip',
+  warning: 'Warning',
+  danger: 'Danger'
+};
+---
+
+<aside class={`callout callout--${type}`}>
+  <div class="callout-header">
+    <span class="callout-icon">{icons[type]}</span>
+    <span class="callout-title">{titles[type]}</span>
+  </div>
+  <div class="callout-content">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .callout {
+    margin-block: 2em;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-md);
+    border-left: 3px solid;
+  }
+
+  .callout--note {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+  }
+
+  .callout--tip {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: #10b981;
+  }
+
+  .callout--warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: #f59e0b;
+  }
+
+  .callout--danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+  }
+
+  .callout-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+    font-weight: 600;
+  }
+
+  .callout-content p:last-child {
+    margin-bottom: 0;
+  }
+</style>

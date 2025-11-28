@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+import { sortPosts } from '../utils/sortPosts';
+
+const posts = sortPosts(await getCollection('posts'));
+const featuredPosts = posts.filter(post => post.data.featured);
+const recentPosts = posts.slice(0, 6);
+---
+
+<BaseLayout
+  title="Lumina - Beautiful Blog Platform"
+  description="A modern, aesthetic blogging platform with complete control"
+>
+  <div class="container">
+    <section class="hero">
+      <h1>Welcome to Lumina</h1>
+      <p class="hero-description">
+        A modern, production-ready blogging platform with beautiful typography,
+        powerful features, and complete ownership of your content.
+      </p>
+    </section>
+
+    {featuredPosts.length > 0 && (
+      <section class="featured-posts">
+        <h2>Featured Posts</h2>
+        <div class="posts-grid">
+          {featuredPosts.map(post => (
+            <PostCard post={post} />
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="recent-posts">
+      <h2>Recent Posts</h2>
+      <div class="posts-grid">
+        {recentPosts.map(post => (
+          <PostCard post={post} />
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .hero {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto var(--space-16);
+    padding-block: var(--space-12);
+  }
+
+  .hero h1 {
+    font-size: var(--font-size-h1);
+    margin-bottom: var(--space-4);
+    color: var(--color-text);
+  }
+
+  .hero-description {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-muted);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .featured-posts,
+  .recent-posts {
+    margin-bottom: var(--space-16);
+  }
+
+  section h2 {
+    font-size: var(--font-size-h2);
+    margin-bottom: var(--space-8);
+    color: var(--color-text);
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--space-6);
+  }
+
+  @media (max-width: 768px) {
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

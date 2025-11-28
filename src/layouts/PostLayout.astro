@@ -1,0 +1,101 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { formatDate } from '../utils/formatDate';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+}
+
+const { post } = Astro.props;
+const { title, description, publishDate, updatedDate, tags, author } = post.data;
+---
+
+<BaseLayout title={title} description={description}>
+  <article class="prose">
+    <header class="post-header">
+      <h1>{title}</h1>
+      <div class="post-meta">
+        <div class="meta-item">
+          <span class="meta-label">Published:</span>
+          <time datetime={publishDate.toISOString()}>{formatDate(publishDate)}</time>
+        </div>
+        {updatedDate && (
+          <div class="meta-item">
+            <span class="meta-label">Updated:</span>
+            <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
+          </div>
+        )}
+        <div class="meta-item">
+          <span class="meta-label">By:</span>
+          <span>{author}</span>
+        </div>
+      </div>
+      {tags.length > 0 && (
+        <div class="post-tags">
+          {tags.map(tag => (
+            <a href={`/tags/${tag}`} class="tag">#{tag}</a>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <slot />
+  </article>
+</BaseLayout>
+
+<style>
+  .prose {
+    padding-block: var(--space-12);
+  }
+
+  .post-header {
+    margin-bottom: var(--space-12);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .post-header h1 {
+    margin: 0 0 var(--space-6) 0;
+  }
+
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-4);
+  }
+
+  .meta-item {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .meta-label {
+    font-weight: 600;
+  }
+
+  .post-tags {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: var(--font-size-sm);
+    padding: var(--space-1) var(--space-3);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+
+  .tag:hover {
+    background: var(--color-surface-raised);
+    border-color: var(--color-accent);
+  }
+</style>

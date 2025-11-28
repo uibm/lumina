@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+import { sortPosts } from '../../utils/sortPosts';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  const tags = [...new Set(posts.flatMap(post => post.data.tags))];
+
+  return tags.map(tag => ({
+    params: { tag },
+    props: {
+      posts: sortPosts(posts.filter(post => post.data.tags.includes(tag)))
+    }
+  }));
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<BaseLayout
+  title={`Posts tagged "${tag}"`}
+  description={`All posts tagged with ${tag}`}
+>
+  <div class="container">
+    <section class="tag-posts">
+      <h1>Posts tagged <span class="tag-highlight">#{tag}</span></h1>
+      <p class="post-count">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
+
+      <div class="posts-grid">
+        {posts.map(post => (
+          <PostCard post={post} />
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .tag-posts {
+    padding-block: var(--space-12);
+  }
+
+  .tag-posts h1 {
+    font-size: var(--font-size-h1);
+    margin-bottom: var(--space-3);
+  }
+
+  .tag-highlight {
+    color: var(--color-accent);
+  }
+
+  .post-count {
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-8);
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--space-6);
+  }
+
+  @media (max-width: 768px) {
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('posts');
+const tags = [...new Set(posts.flatMap(post => post.data.tags))].sort();
+const tagCounts = tags.map(tag => ({
+  tag,
+  count: posts.filter(post => post.data.tags.includes(tag)).length
+}));
+---
+
+<BaseLayout title="Tags" description="Browse posts by tag">
+  <div class="container">
+    <section class="tags-page">
+      <h1>All Tags</h1>
+      <div class="tags-grid">
+        {tagCounts.map(({ tag, count }) => (
+          <a href={`/tags/${tag}`} class="tag-card">
+            <span class="tag-name">#{tag}</span>
+            <span class="tag-count">{count} {count === 1 ? 'post' : 'posts'}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .tags-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding-block: var(--space-12);
+  }
+
+  .tags-page h1 {
+    font-size: var(--font-size-h1);
+    margin-bottom: var(--space-8);
+  }
+
+  .tags-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .tag-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+
+  .tag-card:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+  }
+
+  .tag-name {
+    font-weight: 600;
+    color: var(--color-accent);
+    font-size: var(--font-size-lg);
+  }
+
+  .tag-count {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+  }
+</style>

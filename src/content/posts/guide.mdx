@@ -1,0 +1,75 @@
+---
+title: "Building the Perfect Blog"
+description: "A comprehensive guide to creating your own aesthetically stunning blog platform with complete control."
+publishDate: 2025-01-20
+tags: ["guide", "tutorial", "web-development"]
+featured: false
+author: "Lumina"
+---
+
+# Building the Perfect Blog
+
+This guide walks you through the key decisions and features that make Lumina special.
+
+## Design Philosophy
+
+The goal was simple: create a blog that looks better than Medium, loads faster than Substack, and gives you more control than any platform.
+
+### Typography First
+
+Good typography is the foundation of any great reading experience. Lumina uses:
+
+- Fluid typography that scales smoothly across devices
+- Proper line length (65-75 characters) for optimal reading
+- Generous line-height (1.65) that reduces eye strain
+- Text wrapping that prevents awkward orphans
+
+### Performance Matters
+
+Static generation means pages load instantly. No JavaScript frameworks, no client-side rendering delays, just pure HTML and CSS.
+
+## Key Features
+
+### Markdown + MDX
+
+Write in markdown for simplicity, use MDX components when you need interactivity. Best of both worlds.
+
+### Dark Mode Done Right
+
+Most dark modes fail because they just invert colors. Lumina uses:
+
+- Dark gray backgrounds (#0a0a0a) instead of pure black
+- Reduced brightness text (87% opacity) to prevent eye strain
+- Desaturated accent colors for better contrast
+
+### Tag System
+
+Organize your content with tags. Each tag gets its own page showing all related posts.
+
+### Featured Posts
+
+Highlight your best work by marking posts as featured. They'll appear in a special section on the homepage.
+
+## Customization
+
+Everything is customizable:
+
+```css
+:root {
+  --color-accent: #3b82f6; /* Change this to customize your theme */
+  --font-size-body: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --content-width: min(65ch, calc(100% - 3rem));
+}
+```
+
+Change colors, fonts, spacing, layouts - it's all CSS custom properties.
+
+## Deployment
+
+Push to GitHub, and GitHub Actions automatically builds and deploys your site. Zero configuration needed.
+
+## Conclusion
+
+Building your own blog platform gives you complete freedom. No algorithms, no paywalls, no platform politics. Just you and your content.
+
+Start writing today!
