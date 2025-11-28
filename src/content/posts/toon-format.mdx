@@ -1,0 +1,257 @@
+---
+title: "TOON: A Token-Efficient Format for LLM Data Exchange"
+description: "Exploring Token-Oriented Object Notation, a compact alternative to JSON that reduces LLM token costs by up to 60% while maintaining accuracy and structure."
+publishDate: 2025-01-28
+tags: ["llm", "data-formats", "optimization"]
+featured: true
+author: "Technical Team"
+---
+
+# TOON: A Token-Efficient Format for LLM Data Exchange
+
+As AI becomes more accessible and context windows expand, the cost of LLM tokens remains a critical consideration. Token-Oriented Object Notation (TOON) addresses this by providing a compact, human-readable encoding of JSON data specifically optimized for large language models.
+
+## The Problem with JSON Verbosity
+
+Standard JSON is verbose and token-expensive. Consider this employee data:
+
+```json
+{
+  "employees": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "department": "Engineering",
+      "salary": 75000,
+      "active": true
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "department": "Sales",
+      "salary": 65000,
+      "active": true
+    }
+  ]
+}
+```
+
+While YAML reduces this somewhat, TOON achieves even greater compression:
+
+```toon
+employees[2]{id,name,department,salary,active}:
+  1,Alice,Engineering,75000,true
+  2,Bob,Sales,65000,true
+```
+
+## Key Design Principles
+
+### 1. Tabular Arrays
+
+TOON's sweet spot is uniform arrays of objects. Instead of repeating field names for every record, it declares them once in a header and streams values as CSV-style rows:
+
+```toon
+users[3]{id,name,role}:
+  1,Alice,admin
+  2,Bob,user
+  3,Carol,moderator
+```
+
+### 2. Explicit Structure
+
+The format provides guardrails that help LLMs understand and validate data:
+
+- **Length declarations**: `[N]` tells the model exactly how many items to expect
+- **Field headers**: `{field1,field2}` establishes the schema upfront
+- **Indentation**: Nesting is visually clear without braces
+
+### 3. LLM-Friendly Guardrails
+
+These structural hints improve parsing reliability. Benchmarks show TOON achieves 74% accuracy versus JSON's 70% across four models, while using approximately 40% fewer tokens.
+
+## Performance Benchmarks
+
+### Token Efficiency
+
+Measured using GPT-5's `o200k_base` tokenizer:
+
+```
+Time-series analytics (60 days):
+  TOON:          9,120 tokens
+  JSON:         22,250 tokens  (59.0% more)
+  JSON compact: 14,216 tokens  (35.8% more)
+
+GitHub repositories (100 repos):
+  TOON:          8,744 tokens
+  JSON:         15,144 tokens  (42.3% more)
+  JSON compact: 11,454 tokens  (23.7% more)
+```
+
+### Accuracy Results
+
+Testing across 209 data retrieval questions on 4 models:
+
+```
+Format          Accuracy    Tokens
+TOON            73.9%       2,744
+JSON compact    70.7%       3,081
+YAML            69.0%       3,719
+JSON            69.7%       4,545
+```
+
+TOON achieves higher accuracy with 39.6% fewer tokens than formatted JSON.
+
+## When to Use TOON
+
+TOON excels with:
+
+- **Uniform arrays of objects** (100% tabular eligibility)
+- **API responses** with consistent record structures
+- **Analytics data** with time-series or metrics
+- **Database exports** where schema is stable
+
+Consider alternatives when:
+
+- Data is deeply nested or non-uniform
+- You need CSV's extreme compactness for flat tables
+- Latency is more critical than token cost
+
+## Implementation Example
+
+Converting JSON to TOON using the TypeScript library:
+
+```typescript
+import { encode } from '@toon-format/toon'
+
+const data = {
+  metrics: [
+    { date: "2025-01-01", views: 5715, clicks: 211 },
+    { date: "2025-01-02", views: 7103, clicks: 393 }
+  ]
+}
+
+console.log(encode(data))
+```
+
+Output:
+
+```toon
+metrics[2]{date,views,clicks}:
+  2025-01-01,5715,211
+  2025-01-02,7103,393
+```
+
+## Integration with LLMs
+
+When using TOON with language models:
+
+1. **Show the format** instead of describing it - models parse it naturally once they see the pattern
+2. **Wrap in code blocks**: Use ` ```toon` for syntax highlighting
+3. **Provide headers** when asking models to generate TOON output
+4. **Use tab delimiters** for even better token efficiency
+
+Example prompt structure:
+
+````
+Here's the data in TOON format:
+
+```toon
+products[3]{id,name,price,stock}:
+  1,Widget,29.99,150
+  2,Gadget,49.99,75
+  3,Doohickey,19.99,200
+```
+
+Question: How many products have stock below 100?
+````
+
+## Language Support
+
+TOON has implementations in multiple languages:
+
+- **Official**: TypeScript, Python, Rust, Go, .NET, Java, Dart
+- **Community**: PHP, Ruby, Swift, Elixir, OCaml, Perl, C++, and more
+
+## Tooling Ecosystem
+
+- **VS Code Extension**: Syntax highlighting, validation, conversion
+- **Tree-sitter Grammar**: For Neovim, Helix, Emacs, Zed
+- **Online Playgrounds**: Interactive token comparison tools
+- **CLI Tool**: Quick JSON ↔ TOON conversions
+
+## Real-World Use Cases
+
+### API Data Transfer
+
+When sending product catalogs to LLMs for analysis:
+
+```toon
+products[100]{id,name,category,price,rating,reviews}:
+  1,Laptop Pro,Electronics,1299.99,4.5,2847
+  2,Office Chair,Furniture,399.99,4.2,1523
+  ...
+```
+
+### Analytics Dashboards
+
+Time-series data for LLM-powered insights:
+
+```toon
+daily_metrics[30]{date,revenue,users,conversions}:
+  2025-01-01,45231.50,1523,89
+  2025-01-02,52847.25,1847,103
+  ...
+```
+
+### Database Query Results
+
+Exporting query results for LLM processing:
+
+```toon
+user_activity[500]{user_id,action,timestamp,duration_ms}:
+  101,page_view,2025-01-28T10:15:30Z,2340
+  102,purchase,2025-01-28T10:16:45Z,15670
+  ...
+```
+
+## Trade-offs and Considerations
+
+### Advantages
+
+- Significant token savings (30-60% vs JSON)
+- Better LLM comprehension accuracy
+- Self-documenting structure
+- Lossless JSON round-trips
+- Minimal syntax to learn
+
+### Limitations
+
+- Requires uniform data structures for maximum benefit
+- Not ideal for deeply nested or irregular data
+- Slightly larger than CSV for pure flat tables
+- Smaller ecosystem than JSON (but growing)
+
+## Future Developments
+
+The TOON specification is stable but evolving based on community feedback. Active areas of development include:
+
+- Enhanced streaming APIs for large datasets
+- Additional language implementations
+- Editor plugins for more platforms
+- Integration with popular data tools
+
+## Conclusion
+
+TOON represents a thoughtful evolution in data formats for the LLM era. By combining YAML's readability with CSV's compactness and adding structural guardrails, it delivers measurable improvements in both token efficiency and model accuracy.
+
+For applications where token costs matter and data has consistent structure, TOON offers a compelling alternative to JSON. As the ecosystem matures and more tools adopt it, TOON is positioned to become a standard format for LLM data exchange.
+
+## Resources
+
+- **Specification**: Full normative spec with implementation details
+- **Documentation**: Comprehensive guides and API references
+- **Benchmarks**: Detailed accuracy and performance data
+- **Implementations**: Libraries in 15+ programming languages
+- **Community**: Active discussions and tooling development
+
+The format is production-ready and being used in real-world applications today. Give it a try on your next LLM integration project.

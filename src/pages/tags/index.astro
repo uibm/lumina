@@ -8,6 +8,7 @@ const tagCounts = tags.map(tag => ({
   tag,
   count: posts.filter(post => post.data.tags.includes(tag)).length
 }));
+const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout title="Tags" description="Browse posts by tag">
@@ -16,7 +17,7 @@ const tagCounts = tags.map(tag => ({
       <h1>All Tags</h1>
       <div class="tags-grid">
         {tagCounts.map(({ tag, count }) => (
-          <a href={`/tags/${tag}`} class="tag-card">
+          <a href={`${base}tags/${tag}`} class="tag-card">
             <span class="tag-name">#{tag}</span>
             <span class="tag-count">{count} {count === 1 ? 'post' : 'posts'}</span>
           </a>

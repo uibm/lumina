@@ -9,6 +9,7 @@ interface Props {
 
 const { post } = Astro.props;
 const { title, description, publishDate, updatedDate, tags, author } = post.data;
+const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout title={title} description={description}>
@@ -34,7 +35,7 @@ const { title, description, publishDate, updatedDate, tags, author } = post.data
       {tags.length > 0 && (
         <div class="post-tags">
           {tags.map(tag => (
-            <a href={`/tags/${tag}`} class="tag">#{tag}</a>
+            <a href={`${base}tags/${tag}`} class="tag">#{tag}</a>
           ))}
         </div>
       )}

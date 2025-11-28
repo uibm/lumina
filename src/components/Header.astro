@@ -1,15 +1,17 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+
+const base = import.meta.env.BASE_URL;
 ---
 
 <header class="header">
   <div class="container">
     <nav class="nav">
-      <a href="/" class="logo">Lumina</a>
+      <a href={`${base}`} class="logo">Lumina</a>
       <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/tags">Tags</a>
-        <a href="/about">About</a>
+        <a href={`${base}`}>Home</a>
+        <a href={`${base}tags`}>Tags</a>
+        <a href={`${base}about`}>About</a>
         <ThemeToggle />
       </div>
     </nav>
